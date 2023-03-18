@@ -1,5 +1,6 @@
 # GIGI
 
+<image src="img/logo.png" width=600/>
 Cryptocurrencies leveraging the distributed nature of blockchain technology are becoming popular day by
 day, they provide a safe, secure and a distributed approach for removing centralization of financial
 institutions. With all these boons comes a bane of high carbon footprint of mining proof of work
