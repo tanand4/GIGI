@@ -1,6 +1,7 @@
 #include "../core/common.hpp"
 
-class PandaniteServer {
-    public:
-        void run(json config);
+class GigiServer
+{
+public:
+    void run(json config);
 };
