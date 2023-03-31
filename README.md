@@ -1,44 +1,27 @@
-# GIGI
+# MEMO
 
-<image src="img/logo.png" width=600/>
-Cryptocurrencies leveraging the distributed nature of blockchain technology are becoming popular day by
-day, they provide a safe, secure and a distributed approach for removing centralization of financial
-institutions. With all these boons comes a bane of high carbon footprint of mining proof of work
-cryptocurrencies. GiGi tries to deal with this aspect of reducing the carbon footprint of cryptocurrencies by
-using a proof of space concept by leveraging the fast XSearch algorithm. GiGi has big block size and less
-block generation time which will allow it to perform more transactions in a limited time compared to other
-proof of space coins. The code base is pretty light weight and hence can be used on Raspberry Pi
-clusters having large storage capacity to create farms for mining
+<image src="img/LOGO.png" width=600/>
+MEMO: High-Throughput Blockchain using Memoization
+
+A blockchain is a digital ledger of transactions that is duplicated and distributed across the entire network of computer systems on the blockchain. Blockchains make it difficult or impossible to change, hack, or cheat the system and are one of the most disrupting technologies of the past several decades. However, this decentralized technology is orders of magnitude slower and less energy efficient than existing centralized payment processing approaches such as credit cards run by VISA and Mastercard. Blockchain implementations such as Bitcoin are here to stay, but they currently have a disproportionate carbon footprint and slow transaction speeds (e.g. 7 transactions per sec with tens of minutes confirmation times). Our new digital currency MEMO is a high-throughput blockchain using memoization. It achieves over one thousand transactions per second with confirmations in seconds through larger blocks with smaller block times, and has the potential to achieve over a million transactions per second through sharding. MEMO achieves energy efficiency on par with centralized solutions as well as proof of stake blockchains using an improved Proof of Space consensus using the novel CryptoMemoiz algorithm to implement cryptographic puzzle memoization. CryptoMemoiz leverages XSearch indexing to reduce I/O, large memory, and significant compute resource requirements. MEMO was designed to be lightweight enough to operate on small nodes such as Raspberry PIs, as well as making use of high-end servers with 100+ cores, hundreds of gigabytes of memory, and multiple NVMe storage devices.
 
 ### Circulation
 
-GIGI is minted by miners who earn rewards. Mining payments occur using the _thwothirding_ algorithm, which yields a total final circulation of ~100M PDN:
+MEMO crypto is a high throughput blockchain based on the energy efficient Proof of Space consensus using the novel CryptoMemoiz algorithm to implement cryptographic puzzle memoization. Proof of Space is more energy efficient than Proof of Work
+Initial Difficulty: 42 bits prefix (good for 1 find between 64TB and 128TB netspace, or about 8 finds between 512TB and 1024TB)
 
-- 50 PDN per block until block 666666
-- 50\*(2/3) PDN per block from blocks 666667 to 2\*666666
-- 50\*(2/3)^2 PDN per block from blocks 2\*66666+1 to 3\*666666
-  etc.
-
-#### Comparison with halving
-
-Block reward changes are more often and have less impact compared to halving:
-<image src="img/reward.png" width=600/>
-
-The payout curve is smoother in twothirding compared to halving:
-
-<image src="img/circulation.png" width=600/>
-
-### Technical Implementation
-
-Pandanite is written from the ground up in C++. We want the Pandanite source code to be simple, elegant, and easy to understand. Rather than adding duct-tape to an existing currency, we built Pandanite from scratch with lots of love. There are a few optimizations that we have made to help further our core objectives:
-
-- Switched encryption scheme from [secp256k1](https://github.com/bitcoin-core/secp256k1) (which is used by ETH & BTC) to [ED25519](https://ed25519.cr.yp.to/) -- results in 8x speedup during verification and public keys half the size.
-- Up to 25,000 transactions per block, 90 second block time
+- winners for a block will be multiple with current approach, one will be selected based on a predetermined algorithm to create block, but all winners will receive equal payout of mining reward; transaction fees will go to winner assembling block
+  BlockTime: 3.1536 seconds (~10M blocks per year)
+- Block Size: 4096 transactions
+- Halving Period: Every 10M blocks, approximately every 12 months
+- Initial coin rewards: 23 coins; every 12 months, reduce to next smaller prime number [23, 19, 17, 13, 11, 7, 5, 3, 2, 0]; 10th reduction should make the reward 0 coins
+- Initial fees for transactions: 0.001 coin + 1%, reduce by 0.1% every halving period, until fee is 0.001 coin + 0.1% which will remain as a fixed fee for all transactions
+- Maximum supply of coins: 1,000,000,000
 
 ### Getting Started
 
 _Windows_:
-Windows is not currently supported as a build environment. You may run the [dcrptd miner](https://github.com/De-Crypted/dcrptd-miner/releases) to mine Pandanite
+Windows is not currently supported as a build environment. You may run the [dcrptd miner](https://github.com/De-Crypted/dcrptd-miner/releases) to mine MEMO
 
 _Mac OSX_ build pre-requirements
 
@@ -78,8 +61,8 @@ sudo pip3 install conan==1.59
 ### Building
 
 ```
-git clone https://github.com/tanand4/GIGI.git
-cd GIGI
+git clone https://github.com/tanand4/MEMO.git
+cd MEMO
 mkdir build
 cd build
 conan install .. --build=missing
@@ -150,60 +133,4 @@ Some server running args:
 --testnet (Run in testnet mode, good for testing your mining setup)
 ```
 
-Full list of arguments can be found here: https://github.com/tanand4/GIGI/blob/master/src/core/config.cpp
-
-### Docker
-
-Pandanite is pre-built for amd64 and arm64 with [GitHub Actions](https://github.com/pandanite-crypto/pandanite/actions) and distributed with the [GitHub Container Registry](https://github.com/pandanite-crypto/pandanite/pkgs/container/pandanite)
-
-#### Running with Docker
-
-with `docker`
-
-```shell
-docker run -d --name pandanite -p 3000:3000 -v $(pwd)/pandanite-data:/pandanite/data ghcr.io/pandanite-crypto/pandanite:latest server
-docker logs -f pandanite
-```
-
-You can follow the progress of server sync from `http://localhost:3000`
-
-Running with `docker-compose` is recommended to easily add more options like cpu usage limits and a health checks:
-
-```yaml
-version: "3.4"
-
-services:
-  pandanite:
-    image: ghcr.io/pandanite-crypto/pandanite:latest
-    command: server
-    ports:
-      - 3000:3000
-    volumes:
-      - ./pandanite-data:/pandanite/data
-    restart: unless-stopped
-    cpus: 8
-    healthcheck:
-      test: ["CMD", "curl", "-sf", "http://127.0.0.1:3000"]
-      interval: 10s
-      timeout: 3s
-      retries: 3
-      start_period: 10s
-```
-
-#### Building with docker
-
-Clone this repository and then
-
-```shell
-docker build . -t pandanite
-docker run [OPTIONS] pandanite server
-```
-
-Running CI build locally
-
-```shell
-docker run --privileged --rm tonistiigi/binfmt --install all
-docker buildx create --use
-
-GITHUB_REPOSITORY=NeedsSomeValue GITHUB_SHA=NeedsSomeValue docker buildx bake --progress=plain
-```
+Full list of arguments can be found here: https://github.com/tanand4/MEMO/blob/master/src/core/config.cpp

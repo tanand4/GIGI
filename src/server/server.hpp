@@ -1,6 +1,6 @@
 #include "../core/common.hpp"
 
-class GigiServer
+class MEMOServer
 {
 public:
     void run(json config);

@@ -70,7 +70,7 @@ namespace
     }
 }
 
-void GigiServer::run(json config)
+void MEMOServer::run(json config)
 {
     srand(time(0));
 
@@ -977,7 +977,7 @@ void GigiServer::run(json config)
         response += "<head><meta http-equiv=\"refresh\" content=\"1.5\"/><script src=\"https://adamvleggett.github.io/drawdown/drawdown.js\"></script></head>";
         response += "<body>";
         response += "<pre id=\"content\" style=\"display:none\">";
-        response += "# GIGI Server " + string(BUILD_VERSION) + "\n";
+        response += "# MEMO Server " + string(BUILD_VERSION) + "\n";
         response += "***\n";
         response += "## Stats\n";
         response += "- Loaded Blockchain length: " + manager.getBlockCount() + "\n";
