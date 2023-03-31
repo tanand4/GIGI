@@ -37,6 +37,30 @@ void MemPool::mempool_sync() {
             toSend.clear();
         }
 
+        std::vector<Transaction> invalidTxs;
+        {
+            std::unique_lock<std::mutex> lock(mempool_mutex);
+            for (auto it = transactionQueue.begin(); it != transactionQueue.end(); ) {
+                try {
+                    ExecutionStatus status = blockchain.verifyTransaction(*it);
+                    if (status != SUCCESS) {
+                        invalidTxs.push_back(*it);
+                        it = transactionQueue.erase(it);
+                    } else {
+                        ++it;
+                    }
+                } catch (const std::exception& e) {
+                    std::cout << "Caught exception: " << e.what() << '\n';
+                    invalidTxs.push_back(*it);
+                    it = transactionQueue.erase(it);
+                }
+            }
+        }
+
+        if (transactionQueue.empty()) {
+            continue;
+        }
+        
         std::vector<std::future<bool>> reqs;
         std::set<std::string> neighbors = hosts.sampleFreshHosts(TX_BRANCH_FACTOR);
         bool all_sent = true;
@@ -48,7 +72,7 @@ void MemPool::mempool_sync() {
                         sendTransaction(neighbor, tx);
                         return true;
                     } catch (...) {
-                        //Logger::logError("MemPool::mempool_sync", "Could not send tx to " + neighbor); // not thread safe, find different solution
+                        Logger::logError("MemPool::mempool_sync", "Could not send tx to " + neighbor);
                         return false;
                     }
                 }));
@@ -61,7 +85,6 @@ void MemPool::mempool_sync() {
             }
         }
 
-        // if we did not succeed sending all transactions, put the unsent ones back in queue
         if (!all_sent) {
             std::unique_lock<std::mutex> lock(toSend_mutex);
             for (const auto& tx : txs) {
